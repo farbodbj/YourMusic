@@ -43,11 +43,12 @@ dependencies {
     apply plugin: 'kotlin-kapt'
     apply plugin: "androidx.navigation.safeargs"
 
-    // room
-    implementation "androidx.room:room-runtime:2.5.2"
-    kapt "androidx.room:room-compiler:2.5.2"
-    implementation "androidx.room:room-ktx:2.5.2"
-    implementation 'androidx.room:room-paging:2.5.2'
+
+    // media3 exoplayer
+    implementation "androidx.media3:media3-exoplayer:1.1.1"
+    implementation "androidx.media3:media3-ui:1.1.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
+    implementation "androidx.media3:media3-session:1.1.1"
 
     // navigation component
     implementation "androidx.navigation:navigation-fragment-ktx:2.6.0"
