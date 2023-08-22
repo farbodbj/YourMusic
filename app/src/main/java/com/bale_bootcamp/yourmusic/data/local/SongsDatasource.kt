@@ -3,7 +3,7 @@ package com.bale_bootcamp.yourmusic.data.local
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
-import android.provider.MediaStore
+import android.provider.MediaStore.Audio.Media
 import android.util.Log
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.data.model.SortOrder
@@ -18,10 +18,11 @@ class SongsDatasource @Inject constructor(
 ) {
 
     private val audioColumns = listOf(
-        MediaStore.Audio.Media.TITLE,
-        MediaStore.Audio.Media._ID,
-        MediaStore.Audio.Media.ALBUM,
-        MediaStore.Audio.Media.ARTIST,
+        Media.TITLE,
+        Media._ID,
+        Media.ALBUM,
+        Media.ARTIST,
+        Media.DURATION
     )
 
     private lateinit var audioColumnIndexes: Map<String, Int>
@@ -43,10 +44,10 @@ class SongsDatasource @Inject constructor(
     }
 
     private fun queryMediaStore(sortOrder: SortOrder): Cursor? {
-        val filterMusics = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
+        val filterMusics = "${Media.IS_MUSIC} != 0"
 
         return context.contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            Media.EXTERNAL_CONTENT_URI,
             audioColumns.toTypedArray(),
             filterMusics,
             null,
@@ -56,7 +57,7 @@ class SongsDatasource @Inject constructor(
 
 
     private fun setColumnIndexes(cursor: Cursor) {
-        val (titleColumn, idColumn, albumColumn, artistColumn) =
+        val (titleColumn, idColumn, albumColumn, artistColumn, durationColumn) =
             audioColumns.map {
                 cursor.getColumnIndexOrThrow(it)
             }
@@ -65,7 +66,8 @@ class SongsDatasource @Inject constructor(
             "idColumn" to idColumn,
             "titleColumn" to titleColumn,
             "albumColumn" to albumColumn,
-            "artistsColumn" to artistColumn
+            "artistsColumn" to artistColumn,
+            "durationColumn" to durationColumn
         )
     }
 
@@ -78,16 +80,17 @@ class SongsDatasource @Inject constructor(
     }
 
     private fun createSongFromCursor(cursor: Cursor): Song {
-        val id = cursor.getLong(audioColumnIndexes["id"]!!)
-        val title = cursor.getString(audioColumnIndexes["title"]!!)
-        val album = cursor.getString(audioColumnIndexes["album"]!!)
-        val artist = cursor.getString(audioColumnIndexes["artist"]!!)
+        val id = cursor.getLong(audioColumnIndexes["idColumn"]!!)
+        val title = cursor.getString(audioColumnIndexes["titleColumn"]!!)
+        val album = cursor.getString(audioColumnIndexes["albumColumn"]!!)
+        val artist = cursor.getString(audioColumnIndexes["artistsColumn"]!!)
+        val duration = cursor.getLong(audioColumnIndexes["durationColumn"]!!)
         val contentUri =
             ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                Media.EXTERNAL_CONTENT_URI,
                 id
             )
 
-        return Song(id, title, album, artist, contentUri)
+        return Song(id, title, album, artist, duration, contentUri)
     }
 }

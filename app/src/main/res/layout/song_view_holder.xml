@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/song_item_shape"
+    android:layout_marginTop="@dimen/padding_xs"
+    android:layout_marginStart="@dimen/padding_xs"
+    android:layout_marginEnd="@dimen/padding_xs">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="@dimen/song_item_elevation">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/song_cover"
+            android:layout_width="@dimen/song_cover_width"
+            android:layout_height="@dimen/song_cover_height"
+            app:shapeAppearanceOverlay="@style/song_cover_shape"
+            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@drawable/music_cover_placeholder" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/song_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            app:layout_constraintHorizontal_bias="0.02"
+            android:layout_marginTop="@dimen/padding_xs"
+            app:layout_constraintStart_toEndOf="@+id/song_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/artist_name"
+            tools:text="Fur Elise"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/song_cover"
+            app:layout_constraintTop_toBottomOf="@id/song_title"
+            tools:text="Beethoven" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/song_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/artist_name"
+            app:layout_constraintStart_toEndOf="@id/song_cover"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="3:23" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/grey"
+        android:layout_marginBottom="@dimen/padding_xs"/>
+</LinearLayout>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="song_cover_height">64sp</dimen>
+    <dimen name="song_cover_width">64sp</dimen>
+
+    <dimen name="song_item_elevation">6dp</dimen>
+
+    <dimen name="padding_xs">4sp</dimen>
+    <dimen name="padding_s">6sp</dimen>
+    <dimen name="padding_m">8sp</dimen>
+    <dimen name="padding_l">12sp</dimen>
+
+    <dimen name="song_item_corner">8dp</dimen>
+</resources>

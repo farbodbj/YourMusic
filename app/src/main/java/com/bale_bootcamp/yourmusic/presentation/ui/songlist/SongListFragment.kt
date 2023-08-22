@@ -1,21 +1,68 @@
 package com.bale_bootcamp.yourmusic.presentation.ui.songlist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.bale_bootcamp.yourmusic.R
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ListAdapter
+import com.bale_bootcamp.yourmusic.data.model.Song
+import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
+private const val TAG = "SongListFragment"
+@AndroidEntryPoint
 class SongListFragment : Fragment() {
+
+    private var _binding: FragmentSongListBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: SongListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_song_list, container, false)
+    ): View {
+        _binding = FragmentSongListBinding.inflate(layoutInflater, container, false)
+        Log.d(TAG, "songs fragment created")
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loadSongs()
+        setUiComponents()
+        collectSongs()
+    }
+
+    private fun setUiComponents() {
+        setSongsAdapter()
+    }
+
+    private fun setSongsAdapter() {
+        val songsAdapter = SongsAdapter {
+            //TODO: implement song onclick listener
+        }
+        binding.songList.adapter = songsAdapter
+    }
+
+    private fun loadSongs() {
+        viewModel.getSongs()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun collectSongs() {
+        lifecycleScope.launch {
+            viewModel.songs.collect {songs ->
+                Log.d(TAG, "songs count: ${songs.count()}")
+                (binding.songList.adapter as ListAdapter<Song, SongsAdapter.SongViewHolder>).submitList(songs)
+            }
+        }
     }
 
 }
