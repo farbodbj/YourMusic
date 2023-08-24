@@ -1,9 +1,9 @@
-package com.bale_bootcamp.yourmusic.presentation.di
+package com.bale_bootcamp.yourmusic.data.di
 
 import android.content.Context
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
-import com.bale_bootcamp.yourmusic.presentation.player.MediaLibrarySessionCallback
+import com.bale_bootcamp.yourmusic.data.player.MediaLibrarySessionCallback
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

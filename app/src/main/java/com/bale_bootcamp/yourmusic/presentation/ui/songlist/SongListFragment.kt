@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ListAdapter
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
@@ -38,15 +39,17 @@ class SongListFragment : Fragment() {
         loadSongs()
         setUiComponents()
         collectSongs()
+        viewModel.addSongs()
     }
+
 
     private fun setUiComponents() {
         setSongsAdapter()
     }
 
     private fun setSongsAdapter() {
-        val songsAdapter = SongsAdapter {
-            //TODO: implement song onclick listener
+        val songsAdapter = SongsAdapter { position->
+            viewModel.onSongClicked(position)
         }
         binding.songList.adapter = songsAdapter
     }

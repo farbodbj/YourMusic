@@ -1,4 +1,4 @@
-package com.bale_bootcamp.yourmusic.presentation.di
+package com.bale_bootcamp.yourmusic.data.di
 
 import android.content.Context
 import androidx.media3.common.AudioAttributes
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 object ExoPlayerProvider {
     @Provides
     @Singleton
-    private fun provideAudioAttributes() = AudioAttributes.Builder()
+    fun provideAudioAttributes() = AudioAttributes.Builder()
             .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
             .setUsage(C.USAGE_MEDIA)
             .build()

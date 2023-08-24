@@ -15,8 +15,9 @@ import com.bale_bootcamp.yourmusic.databinding.SongViewHolderBinding
 import com.bumptech.glide.Glide
 import java.io.FileNotFoundException
 
+private const val TAG = "SongsAdapter"
 class SongsAdapter(
-    private val songOnClickListener: ((View)->Unit)?
+    private val songOnClickListener: ((Int)->Unit)
 ): ListAdapter<Song, SongsAdapter.SongViewHolder>(DiffCallback) {
     companion object {
         private val DiffCallback = object : DiffUtil.ItemCallback<Song>() {
@@ -29,28 +30,28 @@ class SongsAdapter(
             }
         }
     }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val songViewHolder = SongViewHolder(
-            SongViewHolderBinding.inflate(
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder = SongViewHolder(
+        SongViewHolderBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            )
+            ),
         )
 
-        songViewHolder.itemView.setOnClickListener(songOnClickListener)
-
-
-        return songViewHolder
-    }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         holder.bind(getItem(position))
+        Log.d(TAG, "onclick listener set")
+        holder.onSongClickListener = songOnClickListener
     }
 
     class SongViewHolder(
-        private val binding: SongViewHolderBinding
-    ): RecyclerView.ViewHolder(binding.root) {
+        private val binding: SongViewHolderBinding,
+    ): RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+
+        lateinit var onSongClickListener: ((Int)->Unit)
+
         companion object {
             private const val TAG = "SongViewHolder"
         }
@@ -67,6 +68,7 @@ class SongsAdapter(
         fun bind(song: Song) {
             bindSongProperties(song)
             bindSongCover(song)
+            binding.root.setOnClickListener(this)
         }
 
         private fun bindSongProperties(song: Song) {
@@ -92,6 +94,11 @@ class SongsAdapter(
                     .load(R.drawable.music_cover_placeholder)
                     .into(binding.songCover)
             }
+        }
+
+        override fun onClick(p0: View?) {
+            Log.d(TAG, "song clicked at position $absoluteAdapterPosition")
+            onSongClickListener(absoluteAdapterPosition)
         }
     }
 }

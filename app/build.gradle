@@ -43,6 +43,11 @@ dependencies {
     apply plugin: 'kotlin-kapt'
     apply plugin: "androidx.navigation.safeargs"
 
+    // Guava Futures
+    implementation "com.google.guava:guava:31.0.1-android"
+    implementation "androidx.concurrent:concurrent-futures:1.1.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.0"
+
 
     // media3 exoplayer
     implementation "androidx.media3:media3-exoplayer:1.1.1"

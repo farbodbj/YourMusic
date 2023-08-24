@@ -6,6 +6,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/song_item_shape"
+    android:clickable="true"
+    android:focusable="true"
     android:layout_marginTop="@dimen/padding_xs"
     android:layout_marginStart="@dimen/padding_xs"
     android:layout_marginEnd="@dimen/padding_xs">
