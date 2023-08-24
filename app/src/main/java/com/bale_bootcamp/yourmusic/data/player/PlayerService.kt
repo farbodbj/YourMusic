@@ -4,6 +4,7 @@ import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import com.bale_bootcamp.yourmusic.utils.NullifyField.resetField
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -18,30 +19,19 @@ class PlayerService: MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
-
-//        mediaSession.setSessionActivity(
-//            getActivity(
-//                this,
-//                0,
-//                Intent(this, MainActivity::class.java),
-//                FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
-//            )
-//        )
-
-        Log.d(TAG, "onCreate: called")
+        Log.d(TAG, "player service created")
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
-        Log.d(TAG, "on get session called")
-        return mediaSession
-    }
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaSession
+
 
     override fun onDestroy() {
         mediaSession.run {
             player.release()
             release()
-            // find a way for making the session null
         }
+        // better to use an annotation for the field
+        resetField(this, "mediaSession")
         super.onDestroy()
     }
 }

@@ -13,7 +13,6 @@ interface PlaybackController {
          isRepeatOneEnabled: Boolean) -> Unit
     )?
 
-    fun addSongs(songs: List<Song>)
     fun play(songIndex: Int)
     fun resume()
     fun pause()

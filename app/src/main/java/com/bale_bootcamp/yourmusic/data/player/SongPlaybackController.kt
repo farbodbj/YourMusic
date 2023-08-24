@@ -2,12 +2,14 @@ package com.bale_bootcamp.yourmusic.data.player
 
 import android.content.Context
 import androidx.core.content.ContextCompat
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -15,12 +17,18 @@ private const val TAG = "SongPlaybackController"
 @UnstableApi
 class SongPlaybackController @Inject constructor(
     @ApplicationContext context: Context,
-    var mediaControllerFuture: ListenableFuture<MediaController>
+    private val mediaControllerFuture: ListenableFuture<MediaController>
 ): PlaybackController {
 
     private val mediaController: MediaController?
-        get() = if(mediaControllerFuture.isDone) mediaControllerFuture.get() else null
+        get() = if(mediaControllerFuture.isDone) {
+            mediaControllerFuture.get()
+        } else {
+            Log.w(TAG, "mediaController get() called, when mediaControllerFuture was not ready")
+            null
+        }
 
+    val mediaItems: MutableList<MediaItem> = mutableListOf()
 
     override var mediaControllerCallback: (
         (playerState: PlayerState,
@@ -32,9 +40,8 @@ class SongPlaybackController @Inject constructor(
 
 
     init {
-//        val sessionToken = SessionToken(context, ComponentName(context, PlayerService::class.java))
-//        mediaControllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
         mediaControllerFuture.addListener({ controllerListener() }, ContextCompat.getMainExecutor(context))
+        setMediaControllerFutureListener()
     }
 
     private fun controllerListener() {
@@ -56,27 +63,15 @@ class SongPlaybackController @Inject constructor(
         })
     }
 
-
-    private fun Int.toPlayerState(isPlaying: Boolean) =
-        when (this) {
-            Player.STATE_IDLE -> PlayerState.STOPPED
-            Player.STATE_ENDED -> PlayerState.STOPPED
-            else -> if (isPlaying) PlayerState.PLAYING else PlayerState.PAUSED
-        }
-
-    override fun addSongs(songs: List<Song>) {
-        Log.d(TAG, "add songs called, media controller is null: ${mediaController == null}")
-        val mediaItems = songs.map {
-            Log.d(TAG, "add song: ${it.title}")
-            it.toMediaItem()
-        }
-
-        mediaController?.addMediaItems(0, mediaItems)
-        Log.d(TAG, "addSongs: ${mediaController?.mediaItemCount}")
+    private fun setMediaControllerFutureListener() {
+        mediaControllerFuture.addListener({
+            mediaController?.addMediaItems(mediaItems)
+        }, MoreExecutors.directExecutor())
     }
 
+
     override fun play(songIndex: Int) {
-        Log.d(TAG, "player ready, play: $songIndex")
+        Log.d(TAG, "player ready, playing: $songIndex")
         Log.d(TAG, "media items count: ${mediaController?.mediaItemCount}")
 
         mediaController?.apply {

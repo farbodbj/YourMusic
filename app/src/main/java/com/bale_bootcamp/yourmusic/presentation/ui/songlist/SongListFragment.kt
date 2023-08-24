@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ListAdapter
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
@@ -55,7 +54,7 @@ class SongListFragment : Fragment() {
     }
 
     private fun loadSongs() {
-        viewModel.getSongs()
+        viewModel.getSongsLists()
     }
 
     @Suppress("UNCHECKED_CAST")
