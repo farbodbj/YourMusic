@@ -7,7 +7,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
-import com.bale_bootcamp.yourmusic.data.model.Song
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,13 +15,14 @@ import javax.inject.Inject
 private const val TAG = "SongPlaybackController"
 @UnstableApi
 class SongPlaybackController @Inject constructor(
-    @ApplicationContext context: Context,
+    @ApplicationContext private val context: Context,
     private val mediaControllerFuture: ListenableFuture<MediaController>
 ): PlaybackController {
 
     private val mediaController: MediaController?
         get() = if(mediaControllerFuture.isDone) {
             mediaControllerFuture.get()
+
         } else {
             Log.w(TAG, "mediaController get() called, when mediaControllerFuture was not ready")
             null
@@ -32,7 +32,7 @@ class SongPlaybackController @Inject constructor(
 
     override var mediaControllerCallback: (
         (playerState: PlayerState,
-         currentMusic: Song?,
+         currentMusic: Int?,
          currentPosition: Long,
          totalDuration: Long,
          isShuffleEnabled: Boolean,
@@ -52,7 +52,7 @@ class SongPlaybackController @Inject constructor(
                 with(player) {
                     mediaControllerCallback?.invoke(
                         playbackState.toPlayerState(isPlaying),
-                        Song(currentMediaItem!!),
+                        currentMediaItemIndex,
                         currentPosition.coerceAtLeast(0L),
                         duration.coerceAtLeast(0L),
                         shuffleModeEnabled,

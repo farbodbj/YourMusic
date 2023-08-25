@@ -24,7 +24,6 @@ class PlayerService: MediaSessionService() {
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaSession
 
-
     override fun onDestroy() {
         mediaSession.run {
             player.release()

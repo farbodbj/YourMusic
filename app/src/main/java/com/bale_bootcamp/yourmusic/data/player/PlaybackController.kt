@@ -1,12 +1,10 @@
 package com.bale_bootcamp.yourmusic.data.player
 
-import com.bale_bootcamp.yourmusic.data.model.Song
-
 interface PlaybackController {
 
     var mediaControllerCallback: (
         (playerState: PlayerState,
-         currentMusic: Song?,
+         currentMediaItemIndex: Int?,
          currentPosition: Long,
          totalDuration: Long,
          isShuffleEnabled: Boolean,

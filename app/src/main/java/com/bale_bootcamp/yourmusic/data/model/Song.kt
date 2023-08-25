@@ -1,5 +1,6 @@
 package com.bale_bootcamp.yourmusic.data.model
 
+import android.content.Context
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -15,13 +16,13 @@ data class Song(
     val artist: String,
     val duration: Long,
     val uri: Uri) {
-    constructor(mediaItem: MediaItem) : this(
-        id = mediaItem.mediaId.toLong(),
+    constructor(mediaItem: MediaItem, context: Context) : this(
+        id = mediaItem.mediaId.substringAfterLast("/").toLong(),
         title = mediaItem.mediaMetadata.title.toString(),
         album = mediaItem.mediaMetadata.albumTitle.toString(),
         artist = mediaItem.mediaMetadata.artist.toString(),
-        duration = mediaItem.getDuration(),
-        uri = mediaItem.requestMetadata.mediaUri!!
+        duration = mediaItem.getDuration(context),
+        uri = Uri.parse(mediaItem.mediaId)
     )
 
     @UnstableApi

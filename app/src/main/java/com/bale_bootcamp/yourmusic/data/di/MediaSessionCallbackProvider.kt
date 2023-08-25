@@ -1,6 +1,6 @@
 package com.bale_bootcamp.yourmusic.data.di
 
-import com.bale_bootcamp.yourmusic.data.player.MediaLibrarySessionCallback
+import com.bale_bootcamp.yourmusic.data.player.MediaSessionCallback
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,8 +9,8 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object MediaLibrarySessionCallbackProvider {
+object MediaSessionCallbackProvider {
     @Singleton
     @Provides
-    fun provideMediaLibrarySessionCallback() = MediaLibrarySessionCallback()
+    fun provideMediaLibrarySessionCallback() = MediaSessionCallback()
 }
