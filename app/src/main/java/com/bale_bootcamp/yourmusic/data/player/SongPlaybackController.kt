@@ -16,10 +16,10 @@ private const val TAG = "SongPlaybackController"
 @UnstableApi
 class SongPlaybackController @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val mediaControllerFuture: ListenableFuture<MediaController>
+    val mediaControllerFuture: ListenableFuture<MediaController>
 ): PlaybackController {
 
-    private val mediaController: MediaController?
+    val mediaController: MediaController?
         get() = if(mediaControllerFuture.isDone) {
             mediaControllerFuture.get()
 
@@ -65,6 +65,7 @@ class SongPlaybackController @Inject constructor(
 
     private fun setMediaControllerFutureListener() {
         mediaControllerFuture.addListener({
+            Log.d(TAG, "mediaItems count: ${mediaItems.count()}")
             mediaController?.addMediaItems(mediaItems)
         }, MoreExecutors.directExecutor())
     }
@@ -86,6 +87,7 @@ class SongPlaybackController @Inject constructor(
     }
 
     override fun pause() {
+        Log.d(TAG, "pause")
         mediaController?.pause()
     }
 

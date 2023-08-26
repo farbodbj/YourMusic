@@ -8,10 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ListAdapter
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
+import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -41,7 +43,6 @@ class SongListFragment : Fragment() {
         setUiComponents()
         collectSongs()
         viewModel.addSongs()
-        viewModel.setMediaControllerCallback()
         setPlayer()
     }
 
@@ -60,9 +61,11 @@ class SongListFragment : Fragment() {
 
     @UnstableApi
     fun setPlayer() {
-        binding.playbackControls.exoPlay.setOnClickListener { viewModel.playPause() }
-        binding.playbackControls.exoPrev.setOnClickListener { viewModel.previous() }
-        binding.playbackControls.exoNext.setOnClickListener { viewModel.next() }
+        viewModel.playbackController.mediaControllerFuture.addListener({
+            val mediaController = viewModel.playbackController.mediaControllerFuture.get()
+            binding.playbackControls.player = mediaController
+        }, MoreExecutors.directExecutor())
+
 
     }
 
