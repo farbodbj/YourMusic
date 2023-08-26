@@ -8,13 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.ListAdapter
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
-import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -41,14 +40,18 @@ class SongListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         loadSongs()
         setUiComponents()
-        collectSongs()
-        viewModel.addSongs()
-        setPlayer()
     }
 
 
     private fun setUiComponents() {
+        setSongsList()
+        setPlayerController()
+    }
+
+
+    private fun setSongsList() {
         setSongsAdapter()
+        collectSongs()
     }
 
 
@@ -60,18 +63,18 @@ class SongListFragment : Fragment() {
     }
 
     @UnstableApi
-    fun setPlayer() {
-        viewModel.playbackController.mediaControllerFuture.addListener({
-            val mediaController = viewModel.playbackController.mediaControllerFuture.get()
+    fun setPlayerController() = lifecycleScope.launch {
+        viewModel.mediaController.collectLatest { mediaController ->
             binding.playbackControls.player = mediaController
-        }, MoreExecutors.directExecutor())
-
-
+        }
     }
+
 
     private fun loadSongs() {
         viewModel.getSongsLists()
+        viewModel.addSongsToPlayer()
     }
+
 
     @Suppress("UNCHECKED_CAST")
     private fun collectSongs() {
@@ -83,4 +86,8 @@ class SongListFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
