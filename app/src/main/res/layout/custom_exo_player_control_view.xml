@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/playback_controls"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -25,36 +26,40 @@
             android:id="@+id/exo_shuffle"
             android:layout_width="@dimen/playback_button_width"
             android:layout_height="@dimen/play_button_height"
-            android:src="@drawable/shuffle_selector"
-            android:background="@color/transparent" />
+            android:layout_gravity="start"
+            android:background="@color/transparent"
+            style="@style/ExoStyledControls.Button.Bottom.Shuffle"/>
 
         <ImageButton
             android:id="@+id/exo_prev"
             android:layout_width="@dimen/playback_button_width"
             android:layout_height="@dimen/play_button_height"
+            android:layout_gravity="start"
             android:src="@drawable/skip_previous_white_24dp"
-            android:background="@color/transparent" />
+            android:background="@color/transparent"
+            style="@style/ExoMediaButton.Previous"/>
 
         <ImageButton
-            android:id="@+id/exo_play"
+            android:id="@+id/exo_play_pause"
             android:layout_width="@dimen/playback_button_width"
             android:layout_height="@dimen/play_button_height"
             android:src="@drawable/play_arrow_white_24dp"
-            android:background="@color/transparent" />
+            android:background="@color/transparent"
+            style="@style/ExoStyledControls.Button.Center.PlayPause"/>
+
         <ImageButton
             android:id="@+id/exo_next"
             android:layout_width="@dimen/playback_button_width"
             android:layout_height="@dimen/play_button_height"
             android:src="@drawable/skip_next_white_24dp"
-            android:background="@color/transparent" />
+            android:background="@color/transparent"
+            style="@style/ExoMediaButton.Next"/>
 
         <ImageButton
             android:id="@+id/exo_repeat_toggle"
             android:layout_width="@dimen/playback_button_width"
             android:layout_height="@dimen/play_button_height"
-            android:src="@drawable/repeat_mode_selector"
-            android:background="@color/transparent"/>
-
+            android:background="@color/transparent"
+            style="@style/ExoStyledControls.Button.Bottom.RepeatToggle"/>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
