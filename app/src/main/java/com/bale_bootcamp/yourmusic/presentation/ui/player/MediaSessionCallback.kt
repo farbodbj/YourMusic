@@ -1,4 +1,4 @@
-package com.bale_bootcamp.yourmusic.data.player
+package com.bale_bootcamp.yourmusic.presentation.ui.player
 
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaSession

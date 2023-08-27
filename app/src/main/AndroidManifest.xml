@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name="com.bale_bootcamp.yourmusic.data.player.PlayerService"
+            android:name="com.bale_bootcamp.yourmusic.presentation.ui.player.PlayerService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true">
             <intent-filter>

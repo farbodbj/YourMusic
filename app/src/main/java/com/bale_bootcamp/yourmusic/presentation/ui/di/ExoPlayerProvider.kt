@@ -1,4 +1,4 @@
-package com.bale_bootcamp.yourmusic.data.di
+package com.bale_bootcamp.yourmusic.presentation.ui.di
 
 import android.content.Context
 import androidx.media3.common.AudioAttributes

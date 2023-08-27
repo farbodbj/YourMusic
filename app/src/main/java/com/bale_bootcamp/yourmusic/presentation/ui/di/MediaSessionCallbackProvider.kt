@@ -1,6 +1,6 @@
-package com.bale_bootcamp.yourmusic.data.di
+package com.bale_bootcamp.yourmusic.presentation.ui.di
 
-import com.bale_bootcamp.yourmusic.data.player.MediaSessionCallback
+import com.bale_bootcamp.yourmusic.presentation.ui.player.MediaSessionCallback
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
