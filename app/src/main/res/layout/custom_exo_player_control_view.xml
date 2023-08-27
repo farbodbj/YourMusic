@@ -9,6 +9,7 @@
         android:id="@+id/exo_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/playback_controls"
         app:layout_constraintStart_toStartOf="parent"
@@ -16,11 +17,19 @@
 
     <LinearLayout
         android:id="@+id/playback_controls"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/exo_progress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/exo_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/padding_s"
+            android:layout_gravity="start"
+            style="@style/ExoStyledControls.TimeText.Duration" />
 
         <ImageButton
             android:id="@+id/exo_shuffle"
@@ -61,5 +70,13 @@
             android:layout_height="@dimen/play_button_height"
             android:background="@color/transparent"
             style="@style/ExoStyledControls.Button.Bottom.RepeatToggle"/>
+
+        <TextView
+            android:id="@+id/exo_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            style="@style/ExoStyledControls.TimeText.Duration" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

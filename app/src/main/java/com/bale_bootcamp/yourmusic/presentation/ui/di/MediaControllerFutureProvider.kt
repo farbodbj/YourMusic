@@ -1,10 +1,10 @@
-package com.bale_bootcamp.yourmusic.data.di
+package com.bale_bootcamp.yourmusic.presentation.ui.di
 
 import android.content.ComponentName
 import android.content.Context
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.bale_bootcamp.yourmusic.data.player.PlayerService
+import com.bale_bootcamp.yourmusic.presentation.ui.player.PlayerService
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.Module
 import dagger.Provides

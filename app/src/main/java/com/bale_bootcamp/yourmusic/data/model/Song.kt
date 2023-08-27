@@ -41,14 +41,4 @@ data class Song(
     }
 }
 
-
-fun Long.getAsMinutesColonSeconds(): String = "${this/60000}:${this%60}"
-
-
-
-
-
-
-
-
-
+fun Long.getAsMinutesColonSeconds(): String = String.format("%02d:%02d", this / 60000, (this % 60000) / 1000)

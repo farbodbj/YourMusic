@@ -7,7 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.data.model.SortOrder
-import com.bale_bootcamp.yourmusic.data.player.SongPlaybackController
+import com.bale_bootcamp.yourmusic.presentation.ui.player.SongPlaybackController
 import com.bale_bootcamp.yourmusic.data.repository.SongsRepository
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.bale_bootcamp.yourmusic.data.player
+package com.bale_bootcamp.yourmusic.presentation.ui.player
 
 interface PlaybackController {
     fun play(songIndex: Int)

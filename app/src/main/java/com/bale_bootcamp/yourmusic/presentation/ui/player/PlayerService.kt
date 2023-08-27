@@ -1,4 +1,4 @@
-package com.bale_bootcamp.yourmusic.data.player
+package com.bale_bootcamp.yourmusic.presentation.ui.player
 
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
@@ -15,7 +15,6 @@ private const val TAG = "PlayerService"
 class PlayerService: MediaSessionService() {
     @Inject
     lateinit var mediaSession: MediaSession
-
 
     override fun onCreate() {
         super.onCreate()

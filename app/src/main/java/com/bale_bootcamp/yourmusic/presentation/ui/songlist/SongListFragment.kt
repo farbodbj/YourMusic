@@ -60,6 +60,7 @@ class SongListFragment : Fragment() {
             viewModel.onSongClicked(position)
         }
         binding.songList.adapter = songsAdapter
+
     }
 
     @UnstableApi
