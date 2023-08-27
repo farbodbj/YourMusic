@@ -1,17 +1,22 @@
 package com.bale_bootcamp.yourmusic.data.player
 
+import android.content.Context
+import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 private const val TAG = "SongPlaybackController"
 @UnstableApi
 class SongPlaybackController @Inject constructor(
-    val mediaControllerFuture: ListenableFuture<MediaController>
+    @ApplicationContext private val context: Context,
+    private val mediaControllerFuture: ListenableFuture<MediaController>
 ): PlaybackController {
 
     private val mediaController: MediaController?
@@ -23,24 +28,47 @@ class SongPlaybackController @Inject constructor(
             null
         }
 
-    private val mediaItems: MutableList<MediaItem> = mutableListOf()
+    val mediaItems: MutableList<MediaItem> = mutableListOf()
+
+    override var mediaControllerCallback: (
+        (playerState: PlayerState,
+         currentMusic: Int?,
+         currentPosition: Long,
+         totalDuration: Long,
+         isShuffleEnabled: Boolean,
+         isRepeatOneEnabled: Boolean) -> Unit)? = null
+
 
     init {
-        onAddMediaItemsListener()
+        mediaControllerFuture.addListener({ controllerListener() }, ContextCompat.getMainExecutor(context))
+        setMediaControllerFutureListener()
     }
 
-    private fun onAddMediaItemsListener() {
+    private fun controllerListener() {
+        mediaController?.addListener(object : Player.Listener {
+            override fun onEvents(player: Player, events: Player.Events) {
+                super.onEvents(player, events)
+
+                with(player) {
+                    mediaControllerCallback?.invoke(
+                        playbackState.toPlayerState(isPlaying),
+                        currentMediaItemIndex,
+                        currentPosition.coerceAtLeast(0L),
+                        duration.coerceAtLeast(0L),
+                        shuffleModeEnabled,
+                        repeatMode == Player.REPEAT_MODE_ONE
+                    )
+                }
+            }
+        })
+    }
+
+    private fun setMediaControllerFutureListener() {
         mediaControllerFuture.addListener({
-            Log.i(TAG, "adding media items, count: ${mediaItems.count()}")
             mediaController?.addMediaItems(mediaItems)
         }, MoreExecutors.directExecutor())
     }
 
-    fun addMediaItems(mediaItems: List<MediaItem>) = mediaItems.forEach { mediaItem ->
-        if(mediaItem !in this.mediaItems) {
-            this.mediaItems.add(mediaItem)
-        }
-    }
 
     override fun play(songIndex: Int) {
         Log.d(TAG, "player ready, playing: $songIndex")
@@ -53,7 +81,40 @@ class SongPlaybackController @Inject constructor(
         }
     }
 
+    override fun resume() {
+        mediaController?.play()
+    }
+
+    override fun pause() {
+        mediaController?.pause()
+    }
+
+    override fun next() {
+        mediaController?.seekToNext()
+    }
+
+    override fun previous() {
+        mediaController?.seekToPrevious()
+    }
+
+    override fun seekTo(position: Long) {
+        mediaController?.seekTo(position)
+    }
+
+    override fun setShuffleMode(isEnabled: Boolean) {
+        mediaController?.shuffleModeEnabled = isEnabled
+    }
+
+    override fun setRepeatMode(isEnabled: Boolean) {
+        mediaController?.repeatMode =
+            if (isEnabled)
+                Player.REPEAT_MODE_ONE
+            else
+                Player.REPEAT_MODE_OFF
+    }
+
     override fun destroy() {
         MediaController.releaseFuture(mediaControllerFuture)
+        mediaControllerCallback = null
     }
 }

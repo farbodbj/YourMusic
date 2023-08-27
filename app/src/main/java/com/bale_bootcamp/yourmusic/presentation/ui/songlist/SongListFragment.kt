@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.ListAdapter
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -40,18 +39,15 @@ class SongListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         loadSongs()
         setUiComponents()
+        collectSongs()
+        viewModel.addSongs()
+        viewModel.setMediaControllerCallback()
+        setPlayer()
     }
 
 
     private fun setUiComponents() {
-        setSongsList()
-        setPlayerController()
-    }
-
-
-    private fun setSongsList() {
         setSongsAdapter()
-        collectSongs()
     }
 
 
@@ -63,18 +59,16 @@ class SongListFragment : Fragment() {
     }
 
     @UnstableApi
-    fun setPlayerController() = lifecycleScope.launch {
-        viewModel.mediaController.collectLatest { mediaController ->
-            binding.playbackControls.player = mediaController
-        }
-    }
+    fun setPlayer() {
+        binding.playbackControls.exoPlay.setOnClickListener { viewModel.playPause() }
+        binding.playbackControls.exoPrev.setOnClickListener { viewModel.previous() }
+        binding.playbackControls.exoNext.setOnClickListener { viewModel.next() }
 
+    }
 
     private fun loadSongs() {
         viewModel.getSongsLists()
-        viewModel.addSongsToPlayer()
     }
-
 
     @Suppress("UNCHECKED_CAST")
     private fun collectSongs() {
@@ -86,8 +80,4 @@ class SongListFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
 }
