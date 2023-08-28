@@ -6,6 +6,11 @@
     <dimen name="play_button_height">48sp</dimen>
     <dimen name="playback_button_width">48sp</dimen>
 
+    <dimen name="song_view_song_cover_width">256sp</dimen>
+    <dimen name="song_view_song_cover_height">256sp</dimen>
+    <dimen name="song_view_song_title_size">36sp</dimen>
+    <dimen name="song_view_artist_size">24sp</dimen>
+
     <dimen name="song_item_elevation">6dp</dimen>
 
     <dimen name="padding_xs">4sp</dimen>

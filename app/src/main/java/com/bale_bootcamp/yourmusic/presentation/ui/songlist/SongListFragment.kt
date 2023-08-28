@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.UnstableApi
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
+import com.bale_bootcamp.yourmusic.presentation.ui.SongsSharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -24,14 +26,13 @@ class SongListFragment : Fragment() {
     private var _binding: FragmentSongListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: SongListViewModel by viewModels()
+    private val viewModel: SongsSharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSongListBinding.inflate(layoutInflater, container, false)
-        Log.d(TAG, "songs fragment created")
         return binding.root
     }
 
@@ -56,16 +57,22 @@ class SongListFragment : Fragment() {
 
 
     private fun setSongsAdapter() {
-        val songsAdapter = SongsAdapter { position->
+        val songsAdapter = SongsAdapter {position->
             viewModel.onSongClicked(position)
         }
+
         binding.songList.adapter = songsAdapter
 
+        binding.playbackControls.setOnClickListener {
+            Log.d(TAG, "playback controls holder clicked navigating to song view")
+            val direction = SongListFragmentDirections.actionSongListFragmentToSongViewFragment()
+            findNavController().navigate(direction)
+        }
     }
 
     @UnstableApi
     fun setPlayerController() = lifecycleScope.launch {
-        viewModel.mediaController.collectLatest { mediaController ->
+        viewModel.mediaControllerFlow.collectLatest { mediaController ->
             binding.playbackControls.player = mediaController
         }
     }

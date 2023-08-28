@@ -21,18 +21,22 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/song_view_holder"/>
 
-    <androidx.media3.ui.PlayerControlView
-        android:id="@+id/playback_controls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        <androidx.media3.ui.PlayerControlView
+            android:id="@+id/playback_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:show_timeout="0"
 
-        app:show_timeout="0"
-        app:show_shuffle_button="true"
-        app:repeat_toggle_modes="one"
-        app:controller_layout_id="@layout/custom_exo_player_control_view"
-        app:layout_constraintTop_toBottomOf="@id/song_list"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+            android:clickable="true"
+            android:longClickable="true"
+            android:focusable="true"
+
+            app:show_shuffle_button="true"
+            app:repeat_toggle_modes="one"
+            app:controller_layout_id="@layout/song_list_exo_player_control_view"
+            app:layout_constraintTop_toBottomOf="@id/song_list"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

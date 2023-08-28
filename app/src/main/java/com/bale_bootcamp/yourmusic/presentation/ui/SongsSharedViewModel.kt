@@ -1,24 +1,29 @@
-package com.bale_bootcamp.yourmusic.presentation.ui.songlist
+package com.bale_bootcamp.yourmusic.presentation.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.data.model.SortOrder
-import com.bale_bootcamp.yourmusic.presentation.ui.player.SongPlaybackController
 import com.bale_bootcamp.yourmusic.data.repository.SongsRepository
+import com.bale_bootcamp.yourmusic.presentation.ui.player.SongPlaybackController
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val TAG = "SongListViewModel"
+private const val TAG = "SongsSharedViewModel"
 @HiltViewModel
-class SongListViewModel @Inject constructor(
+class SongsSharedViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val songsRepository: SongsRepository,
     private val playbackController: SongPlaybackController,
 ): ViewModel() {
@@ -26,8 +31,11 @@ class SongListViewModel @Inject constructor(
     private var _songsFlow: MutableStateFlow<List<Song>> = MutableStateFlow(emptyList())
     val songs get() = _songsFlow
 
-    private val _mediaController: MutableStateFlow<MediaController?> = MutableStateFlow(null)
-    val mediaController get() = _mediaController
+    private val _mediaControllerFlow: MutableStateFlow<MediaController?> = MutableStateFlow(null)
+    val mediaControllerFlow get() = _mediaControllerFlow
+
+    private val _currentSong: MutableStateFlow<Song?> = MutableStateFlow(null)
+    val currentSong = _currentSong
 
     init {
         setMediaControllerOnFutureCompletion()
@@ -35,7 +43,7 @@ class SongListViewModel @Inject constructor(
 
     private fun setMediaControllerOnFutureCompletion() = playbackController
         .mediaControllerFuture.addListener({
-            _mediaController.value = playbackController.mediaControllerFuture.get()
+            _mediaControllerFlow.value = playbackController.mediaControllerFuture.get()
         }, MoreExecutors.directExecutor())
 
 
@@ -61,5 +69,25 @@ class SongListViewModel @Inject constructor(
     fun onSongClicked(position: Int) {
         Log.d(TAG, "song clicked: $position")
         playbackController.play(position)
+    }
+
+    @UnstableApi
+    fun setCurrentSongFlow() {
+         viewModelScope.launch {
+            mediaControllerFlow.collectLatest {mediaController ->
+                _currentSong.value = Song(mediaController?.currentMediaItem!!, context)
+                addMediaTransitionListener(mediaController)
+            }
+        }
+    }
+
+    private fun addMediaTransitionListener(mediaController: MediaController) {
+        mediaController.addListener(object: Player.Listener {
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                super.onMediaItemTransition(mediaItem, reason)
+                if(mediaItem != null)
+                    _currentSong.value = Song(mediaItem, context)
+            }
+        })
     }
 }

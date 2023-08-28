@@ -43,6 +43,9 @@ dependencies {
     apply plugin: 'kotlin-kapt'
     apply plugin: "androidx.navigation.safeargs"
 
+    // Palette
+    implementation "androidx.palette:palette-ktx:1.0.0"
+
     // Guava Futures
     implementation "com.google.guava:guava:31.0.1-android"
     implementation "androidx.concurrent:concurrent-futures:1.1.0"

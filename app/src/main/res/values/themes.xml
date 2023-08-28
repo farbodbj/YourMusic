@@ -9,5 +9,14 @@
         <item name="cornerSize">15%</item>
     </style>
 
+    <style name="song_view_song_cover_shape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <color name="exo_bottom_bar_background" tools:override="true" >#10FFFFFF</color>
+    <color name="exo_black_opacity_60" tools:override="true" >#00FFFFFF</color>
+    <drawable name="exo_styled_controls_prev" tools:override="true">@drawable/skip_previous_white_24dp</drawable>
+
     <style name="Theme.YourMusic" parent="Base.Theme.YourMusic" />
 </resources>
