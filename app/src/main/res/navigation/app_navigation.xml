@@ -9,5 +9,19 @@
         android:id="@+id/songListFragment"
         android:name="com.bale_bootcamp.yourmusic.presentation.ui.songlist.SongListFragment"
         android:label="fragment_song_list"
-        tools:layout="@layout/fragment_song_list" />
+        tools:layout="@layout/fragment_song_list">
+        <action
+            android:id="@+id/action_songListFragment_to_songViewFragment"
+            app:destination="@id/songViewFragment"
+            app:exitAnim="@anim/slide_down"
+            app:enterAnim="@anim/slide_up"
+            app:popEnterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
+    </fragment>
+    <fragment
+        android:id="@+id/songViewFragment"
+        android:name="com.bale_bootcamp.yourmusic.presentation.ui.songview.SongViewFragment"
+        android:label="fragment_song_view"
+        tools:layout="@layout/fragment_song_view">
+    </fragment>
 </navigation>
