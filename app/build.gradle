@@ -43,6 +43,9 @@ dependencies {
     apply plugin: 'kotlin-kapt'
     apply plugin: "androidx.navigation.safeargs"
 
+    // Blurring library
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
+
     // Palette
     implementation "androidx.palette:palette-ktx:1.0.0"
 

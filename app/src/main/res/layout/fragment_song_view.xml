@@ -4,9 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.ui.songview.SongViewFragment"
+    tools:context=".presentation.ui.songview.SongViewFragment">
 
-    android:background="@color/black">
+    <ImageView
+        android:id="@+id/background_blurred"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:scaleType="centerCrop"
+        android:foreground="#6F000000"
+        android:foregroundTintMode="src_atop"/>
 
     <ImageButton
         android:id="@+id/hide_button"
@@ -36,6 +44,7 @@
         android:layout_marginTop="@dimen/padding_m"
         android:textSize="@dimen/song_view_song_title_size"
         android:textAlignment="center"
+        android:textColor="@color/white"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintVertical_bias="0.2"
         app:layout_constraintTop_toBottomOf="@id/song_cover"
@@ -51,6 +60,7 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/song_view_artist_size"
         android:textAlignment="center"
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/song_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

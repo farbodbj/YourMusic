@@ -1,10 +1,9 @@
 package com.bale_bootcamp.yourmusic.presentation.ui.songview
 
+
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
@@ -21,9 +20,11 @@ import com.bale_bootcamp.yourmusic.databinding.FragmentSongViewBinding
 import com.bale_bootcamp.yourmusic.presentation.ui.SongsSharedViewModel
 import com.bale_bootcamp.yourmusic.utils.DefaultGlideLogger
 import com.bumptech.glide.Glide
+import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
+
 
 private const val TAG = "SongViewFragment"
 class SongViewFragment : Fragment() {
@@ -61,10 +62,7 @@ class SongViewFragment : Fragment() {
 
             binding.apply {
                 songTitle.text = song.title
-                songTitle.setTextColor(palette.getLightMutedColor(1))
-
                 songArtist.text = song.artist
-                songArtist.setTextColor(palette.getLightMutedColor(1))
             }
         }
     }
@@ -77,19 +75,16 @@ class SongViewFragment : Fragment() {
     private fun setBackground() = lifecycleScope.launch {
         viewModel.currentSong.collectLatest {song ->
             val songCoverBitmap = loadSongCoverBitmap(song!!)
-            val palette = Palette.Builder(songCoverBitmap).generate()
-
-            binding.root.background = getCoverBackgroundGradient(palette)
+            loadBlurredBackground(songCoverBitmap)
         }
     }
 
-    private fun getCoverBackgroundGradient(palette: Palette) = GradientDrawable(
-        GradientDrawable.Orientation.TOP_BOTTOM,
-        intArrayOf(
-            palette.getDarkVibrantColor(0),
-            palette.getLightVibrantColor(1)
-        )
-    )
+    private fun loadBlurredBackground(songCoverBitmap: Bitmap) = Glide.with(binding.root.context)
+            .asBitmap()
+            .load(songCoverBitmap)
+            .addListener(DefaultGlideLogger(TAG))
+            .transform((BlurTransformation()))
+            .into(binding.backgroundBlurred)
 
 
     private fun setSongCoverView() = lifecycleScope.launch {
