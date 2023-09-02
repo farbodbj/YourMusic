@@ -1,10 +1,14 @@
 package com.bale_bootcamp.yourmusic.presentation.ui.songlist
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -39,10 +43,33 @@ class SongListFragment : Fragment() {
     @UnstableApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadSongs()
+        checkPermission({
+            loadSongs()
+        }, {
+            Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+        })
         setUiComponents()
     }
 
+    private fun checkPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
+        var permission = Manifest.permission.READ_EXTERNAL_STORAGE
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (requireContext().checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_DENIED) {
+                registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+                    if (it) onPermissionGranted()
+                    else onPermissionDenied()
+                }.launch(Manifest.permission.READ_MEDIA_AUDIO)
+            }
+        }
+        else {
+            if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+                    if(it) onPermissionGranted()
+                    else onPermissionDenied()
+                }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+    }
 
     private fun setUiComponents() {
         setSongsList()
@@ -76,6 +103,7 @@ class SongListFragment : Fragment() {
             binding.playbackControls.player = mediaController
         }
     }
+
 
 
     private fun loadSongs() {

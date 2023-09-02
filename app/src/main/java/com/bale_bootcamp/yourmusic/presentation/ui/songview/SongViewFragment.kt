@@ -1,13 +1,17 @@
 package com.bale_bootcamp.yourmusic.presentation.ui.songview
 
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -45,7 +49,6 @@ class SongViewFragment : Fragment() {
         viewModel.setCurrentSongFlow()
         setUiComponents()
     }
-
     private fun setUiComponents() {
         setPlayerController()
         setBackground()
