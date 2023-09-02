@@ -26,20 +26,23 @@ class SongPlaybackController @Inject constructor(
     private val mediaItems: MutableList<MediaItem> = mutableListOf()
 
     init {
-        onAddMediaItemsListener()
+        // onAddMediaItemsListener()
     }
 
     private fun onAddMediaItemsListener() {
         mediaControllerFuture.addListener({
             Log.i(TAG, "adding media items, count: ${mediaItems.count()}")
-            mediaController?.addMediaItems(mediaItems)
+            mediaControllerFuture.get().addMediaItems(mediaItems)
         }, MoreExecutors.directExecutor())
     }
 
-    fun addMediaItems(mediaItems: List<MediaItem>) = mediaItems.forEach { mediaItem ->
-        if(mediaItem !in this.mediaItems) {
-            this.mediaItems.add(mediaItem)
+    fun addMediaItems(mediaItems: List<MediaItem>) {
+        mediaItems.forEach { mediaItem ->
+            if (mediaItem !in this.mediaItems) {
+                this.mediaItems.add(mediaItem)
+            }
         }
+        onAddMediaItemsListener()
     }
 
     override fun play(songIndex: Int) {

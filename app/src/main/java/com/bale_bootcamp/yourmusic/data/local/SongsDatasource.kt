@@ -25,19 +25,11 @@ class SongsDatasource @Inject constructor(
         Media.DURATION
     )
 
-    private lateinit var audioColumnIndexes: Map<String, Int>
-
-
     fun getAllSongs(sortOrder: SortOrder): List<Song> {
         val songs: MutableList<Song> = mutableListOf()
-        queryMediaStore(sortOrder)!!.use { cursor ->
-            setColumnIndexes(cursor)
-
-            if (cursor.count > 0 && this::audioColumnIndexes.isInitialized) {
-                Log.i(TAG, "${cursor.count} songs found")
-                populateSongsList(cursor, songs)
-            }
-
+        queryMediaStore(sortOrder)?.use { cursor ->
+            Log.i(TAG, "${cursor.count} songs found")
+            populateSongsList(cursor, songs)
         }
 
         return Collections.unmodifiableList(songs)
@@ -56,22 +48,6 @@ class SongsDatasource @Inject constructor(
     }
 
 
-    private fun setColumnIndexes(cursor: Cursor) {
-        val (titleColumn, idColumn, albumColumn, artistColumn, durationColumn) =
-            audioColumns.map {
-                cursor.getColumnIndexOrThrow(it)
-            }
-
-        audioColumnIndexes = mapOf(
-            "idColumn" to idColumn,
-            "titleColumn" to titleColumn,
-            "albumColumn" to albumColumn,
-            "artistsColumn" to artistColumn,
-            "durationColumn" to durationColumn
-        )
-    }
-
-
     private fun populateSongsList(cursor: Cursor, songsList: MutableList<Song>) {
         while (cursor.moveToNext()) {
             val song = createSongFromCursor(cursor)
@@ -79,12 +55,12 @@ class SongsDatasource @Inject constructor(
         }
     }
 
-    private fun createSongFromCursor(cursor: Cursor): Song {
-        val id = cursor.getLong(audioColumnIndexes["idColumn"]!!)
-        val title = cursor.getString(audioColumnIndexes["titleColumn"]!!)
-        val album = cursor.getString(audioColumnIndexes["albumColumn"]!!)
-        val artist = cursor.getString(audioColumnIndexes["artistsColumn"]!!)
-        val duration = cursor.getLong(audioColumnIndexes["durationColumn"]!!)
+    private fun createSongFromCursor(cursor: Cursor): Song  = with(cursor) {
+        val id = getLong(getColumnIndexOrThrow(Media._ID))
+        val title = getString(getColumnIndexOrThrow(Media.TITLE))
+        val album = getString(getColumnIndexOrThrow(Media.ALBUM))
+        val artist = getString(getColumnIndexOrThrow(Media.ARTIST))
+        val duration = getLong(getColumnIndexOrThrow(Media.DURATION))
         val contentUri =
             ContentUris.withAppendedId(
                 Media.EXTERNAL_CONTENT_URI,

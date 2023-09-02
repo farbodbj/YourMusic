@@ -43,22 +43,22 @@ class SongListFragment : Fragment() {
     @UnstableApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkPermission({
-            loadSongs()
-        }, {
+        checkPermission(this::loadSongs) {
             Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-        })
+        }
         setUiComponents()
     }
 
     private fun checkPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
-        var permission = Manifest.permission.READ_EXTERNAL_STORAGE
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             if (requireContext().checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_DENIED) {
                 registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                     if (it) onPermissionGranted()
                     else onPermissionDenied()
                 }.launch(Manifest.permission.READ_MEDIA_AUDIO)
+            }
+            else {
+                onPermissionGranted()
             }
         }
         else {
@@ -67,6 +67,9 @@ class SongListFragment : Fragment() {
                     if(it) onPermissionGranted()
                     else onPermissionDenied()
                 }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            else {
+                onPermissionGranted()
             }
         }
     }

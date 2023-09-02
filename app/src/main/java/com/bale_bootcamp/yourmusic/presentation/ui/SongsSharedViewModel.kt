@@ -75,14 +75,16 @@ class SongsSharedViewModel @Inject constructor(
     fun setCurrentSongFlow() {
          viewModelScope.launch {
             mediaControllerFlow.collectLatest {mediaController ->
-                _currentSong.value = Song(mediaController?.currentMediaItem!!, context)
+                _currentSong.value = mediaController?.currentMediaItem?.let { currentItem->
+                    Song(currentItem, context)
+                }
                 addMediaTransitionListener(mediaController)
             }
         }
     }
 
-    private fun addMediaTransitionListener(mediaController: MediaController) {
-        mediaController.addListener(object: Player.Listener {
+    private fun addMediaTransitionListener(mediaController: MediaController?) {
+        mediaController?.addListener(object: Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
                 if(mediaItem != null)

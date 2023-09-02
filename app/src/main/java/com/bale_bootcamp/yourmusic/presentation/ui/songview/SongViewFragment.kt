@@ -60,12 +60,10 @@ class SongViewFragment : Fragment() {
 
     private fun setSongProperties () = lifecycleScope.launch {
         viewModel.currentSong.collectLatest { song ->
-            val songCoverBitmap = loadSongCoverBitmap(song!!)
-            val palette = Palette.Builder(songCoverBitmap).generate()
 
             binding.apply {
-                songTitle.text = song.title
-                songArtist.text = song.artist
+                songTitle.text = song?.title
+                songArtist.text = song?.artist
             }
         }
     }
@@ -82,9 +80,9 @@ class SongViewFragment : Fragment() {
         }
     }
 
-    private fun loadBlurredBackground(songCoverBitmap: Bitmap) = Glide.with(binding.root.context)
+    private fun loadBlurredBackground(songCoverBitmap: Bitmap?) = Glide.with(binding.root.context)
             .asBitmap()
-            .load(songCoverBitmap)
+            .load(songCoverBitmap ?: R.drawable.music_cover_placeholder)
             .addListener(DefaultGlideLogger(TAG))
             .transform((BlurTransformation()))
             .into(binding.backgroundBlurred)
@@ -92,35 +90,34 @@ class SongViewFragment : Fragment() {
 
     private fun setSongCoverView() = lifecycleScope.launch {
         viewModel.currentSong.collectLatest {song ->
-            loadSongCover(song!!)
+            loadSongCover(song)
         }
     }
 
 
-    private fun loadSongCover(song: Song) {
-        val songCoverBitmap = loadSongCoverBitmap(song)
+    private fun loadSongCover(song: Song?) {
+        val songCoverBitmap = song?.let {
+            loadSongCoverBitmap(song)
+        }
         Glide.with(binding.root.context)
-            .asBitmap()
-            .load(songCoverBitmap)
+            .load(songCoverBitmap ?: R.drawable.music_cover_placeholder)
             .addListener(DefaultGlideLogger(TAG))
             .into(binding.songCover)
     }
 
 
-    private fun loadSongCoverBitmap(song: Song): Bitmap = try {
-        val (width, height) = listOf(
-            R.dimen.song_view_song_cover_width,
-            R.dimen.song_view_song_cover_height
-        ).map { resId ->
-            binding.root.resources.getDimension(resId).toInt()
-        }
+    private fun loadSongCoverBitmap(song: Song): Bitmap? = try {
+        val (width, height) = listOf(R.dimen.song_view_song_cover_width, R.dimen.song_view_song_cover_height)
+            .map { resId ->
+                binding.root.resources.getDimension(resId).toInt()
+            }
         binding.root.context.contentResolver.loadThumbnail(
             song.uri,
             Size(width, height),
             null
         )
     } catch (e: FileNotFoundException) {
-        BitmapFactory.decodeResource(requireContext().resources, R.drawable.music_cover_placeholder)
+        null
     }
 
 

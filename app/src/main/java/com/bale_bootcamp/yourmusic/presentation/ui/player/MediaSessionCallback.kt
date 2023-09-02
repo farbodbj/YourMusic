@@ -13,7 +13,7 @@ class MediaSessionCallback: MediaSession.Callback {
     ): ListenableFuture<MutableList<MediaItem>> {
         val updatedMediaItems = mediaItems.map { mediaItem ->
             mediaItem.buildUpon()
-                .setUri(mediaItem.localConfiguration!!.uri)
+                .setUri(mediaItem.localConfiguration?.uri)
                 .build()
         }.toMutableList()
 
