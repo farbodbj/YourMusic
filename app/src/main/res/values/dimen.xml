@@ -18,5 +18,5 @@
     <dimen name="padding_m">8sp</dimen>
     <dimen name="padding_l">12sp</dimen>
 
-    <dimen name="song_item_corner">8dp</dimen>
+    <dimen name="song_item_corner">24dp</dimen>
 </resources>

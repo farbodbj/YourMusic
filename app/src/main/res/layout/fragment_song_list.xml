@@ -32,7 +32,7 @@
 
             app:show_shuffle_button="true"
             app:repeat_toggle_modes="one"
-            app:controller_layout_id="@layout/song_view_exo_player_control_view"
+            app:controller_layout_id="@layout/song_exo_player_control_view"
             android:background="@color/playback_controller_background"
             app:layout_constraintTop_toBottomOf="@id/song_list"
             app:layout_constraintBottom_toBottomOf="parent"

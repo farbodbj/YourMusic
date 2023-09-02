@@ -4,7 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
 
-    <color name="grey">#d3d3d3</color>
+    <color name="grey">#808080</color>
+    <color name="grey_light">#d3d3d3d3</color>
 
     <color name="playback_controller_background">#A6000000</color>
 </resources>
