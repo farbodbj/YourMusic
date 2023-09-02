@@ -4,23 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:background="@drawable/song_item_shape"
+    android:layout_margin="@dimen/padding_xs"
+    android:orientation="vertical"
     android:clickable="true"
-    android:focusable="true"
-    android:layout_marginTop="@dimen/padding_xs"
-    android:layout_marginStart="@dimen/padding_xs"
-    android:layout_marginEnd="@dimen/padding_xs">
+    android:focusable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:elevation="@dimen/song_item_elevation">
+        android:layout_height="match_parent">
+
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/song_cover"
             android:layout_width="@dimen/song_cover_width"
             android:layout_height="@dimen/song_cover_height"
+            android:layout_margin="@dimen/padding_xs"
             app:shapeAppearanceOverlay="@style/song_cover_shape"
             app:layout_constraintHorizontal_bias="0.02"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,9 +62,4 @@
             tools:text="3:23" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/grey"
-        android:layout_marginBottom="@dimen/padding_xs"/>
 </LinearLayout>

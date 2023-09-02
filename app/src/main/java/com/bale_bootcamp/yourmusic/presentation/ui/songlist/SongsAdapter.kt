@@ -42,7 +42,6 @@ class SongsAdapter(
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         holder.bind(getItem(position))
-        Log.d(TAG, "onclick listener set")
         holder.onSongClickListener = songOnClickListener
     }
 
@@ -68,6 +67,7 @@ class SongsAdapter(
         fun bind(song: Song) {
             bindSongProperties(song)
             bindSongCover(song)
+            binding.root.clipToOutline = true
             binding.root.setOnClickListener(this)
         }
 
@@ -82,14 +82,18 @@ class SongsAdapter(
 
         private fun bindSongCover(song: Song) {
             try {
+                val now = System.currentTimeMillis()
                 val songCoverBitmap = binding.root.context.contentResolver.loadThumbnail(song.uri, size, null)
                 Glide.with(binding.root.context)
-                    .asBitmap()
                     .load(songCoverBitmap)
+                    .placeholder(R.drawable.music_cover_placeholder)
+                    .dontTransform()
                     .into(binding.songCover)
+
+                Log.d(TAG, "loading album art took ${System.currentTimeMillis() - now}ms")
             }
             catch (e: FileNotFoundException) {
-                Log.d(TAG, "no album art found for ${song.title}, loading the placeholder.")
+                 Log.d(TAG, "no album art found for ${song.title}, loading the placeholder.")
                 Glide.with(binding.root.context)
                     .load(R.drawable.music_cover_placeholder)
                     .into(binding.songCover)

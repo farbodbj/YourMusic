@@ -2,11 +2,12 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.YourMusic" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="backgroundColor">@color/white</item>
+        <item name="colorPrimaryDark">@color/grey</item>
     </style>
 
     <style name="song_cover_shape">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">15%</item>
+        <item name="cornerSize">50%</item>
     </style>
 
     <style name="song_view_song_cover_shape">
