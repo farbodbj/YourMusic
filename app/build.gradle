@@ -46,9 +46,6 @@ dependencies {
     // Blurring library
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
-    // Palette
-    implementation "androidx.palette:palette-ktx:1.0.0"
-
     // Guava Futures
     implementation "com.google.guava:guava:31.0.1-android"
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
@@ -58,7 +55,6 @@ dependencies {
     // media3 exoplayer
     implementation "androidx.media3:media3-exoplayer:1.1.1"
     implementation "androidx.media3:media3-ui:1.1.1"
-    implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
     implementation "androidx.media3:media3-session:1.1.1"
 
     // navigation component

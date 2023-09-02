@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SongsRepository @Inject constructor(
     private val songsDatasource: SongsDatasource
 ) {
-    fun getSongsList(sortOrder: SortOrder): List<Song> {
+    suspend fun getSongsList(sortOrder: SortOrder): List<Song> {
         return songsDatasource.getAllSongs(sortOrder)
     }
 }

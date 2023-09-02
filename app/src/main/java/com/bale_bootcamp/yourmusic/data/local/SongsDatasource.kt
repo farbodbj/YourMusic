@@ -8,6 +8,8 @@ import android.util.Log
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.data.model.SortOrder
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Collections
 import javax.inject.Inject
 
@@ -25,15 +27,16 @@ class SongsDatasource @Inject constructor(
         Media.DURATION
     )
 
-    fun getAllSongs(sortOrder: SortOrder): List<Song> {
+    suspend fun getAllSongs(sortOrder: SortOrder): List<Song> = withContext(Dispatchers.IO) {
         val songs: MutableList<Song> = mutableListOf()
         queryMediaStore(sortOrder)?.use { cursor ->
             Log.i(TAG, "${cursor.count} songs found")
             populateSongsList(cursor, songs)
         }
 
-        return Collections.unmodifiableList(songs)
+        Collections.unmodifiableList(songs)
     }
+
 
     private fun queryMediaStore(sortOrder: SortOrder): Cursor? {
         val filterMusics = "${Media.IS_MUSIC} != 0"

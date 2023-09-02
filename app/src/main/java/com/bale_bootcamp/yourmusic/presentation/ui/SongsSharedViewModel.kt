@@ -47,13 +47,12 @@ class SongsSharedViewModel @Inject constructor(
         }, MoreExecutors.directExecutor())
 
 
-    fun getSongsLists(sortOrder: SortOrder = SortOrder.DATE_ADDED_ASC) {
-        viewModelScope.launch {
-            val data = songsRepository.getSongsList(sortOrder)
-            Log.d(TAG, "data count: ${data.count()}")
-            _songsFlow.value = data
-        }
+    fun getSongsLists(sortOrder: SortOrder = SortOrder.DATE_ADDED_ASC) = viewModelScope.launch {
+        val data = songsRepository.getSongsList(sortOrder)
+        Log.d(TAG, "data count: ${data.count()}")
+        _songsFlow.value = data
     }
+
 
     @UnstableApi
     fun addSongsToPlayer() = viewModelScope.launch {
