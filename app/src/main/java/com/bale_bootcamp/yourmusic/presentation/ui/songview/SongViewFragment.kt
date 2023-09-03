@@ -1,26 +1,23 @@
+@file:SuppressLint("UnsafeOptInUsageError")
 package com.bale_bootcamp.yourmusic.presentation.ui.songview
 
 
-import android.Manifest
-import android.content.pm.PackageManager
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController
 import com.bale_bootcamp.yourmusic.R
 import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongViewBinding
-import com.bale_bootcamp.yourmusic.presentation.ui.SongsSharedViewModel
+import com.bale_bootcamp.yourmusic.presentation.ui.sharedcomponent.SongsPlaybackUiState
+import com.bale_bootcamp.yourmusic.presentation.ui.sharedcomponent.SongsSharedViewModel
 import com.bale_bootcamp.yourmusic.utils.DefaultGlideLogger
 import com.bumptech.glide.Glide
 import jp.wasabeef.glide.transformations.BlurTransformation
@@ -35,6 +32,14 @@ class SongViewFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SongsSharedViewModel by activityViewModels()
+
+    private fun uiStateAccessScope(block: suspend SongsPlaybackUiState.() -> Unit) = lifecycleScope.launch {
+        viewModel.songsPlaybackUiState.collectLatest {
+            block(it)
+        }
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +47,7 @@ class SongViewFragment : Fragment() {
         _binding = FragmentSongViewBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,8 +63,8 @@ class SongViewFragment : Fragment() {
 
     }
 
-    private fun setSongProperties () = lifecycleScope.launch {
-        viewModel.currentSong.collectLatest { song ->
+    private fun setSongProperties () = uiStateAccessScope {
+        currentSong.collectLatest { song ->
 
             binding.apply {
                 songTitle.text = song?.title
@@ -67,28 +73,30 @@ class SongViewFragment : Fragment() {
         }
     }
 
+
     private fun setHideViewButton() = binding.hideButton.setOnClickListener{
             findNavController().popBackStack()
-        }
+    }
 
 
-    private fun setBackground() = lifecycleScope.launch {
-        viewModel.currentSong.collectLatest {song ->
+    private fun setBackground() = uiStateAccessScope {
+        currentSong.collectLatest { song ->
             val songCoverBitmap = loadSongCoverBitmap(song!!)
             loadBlurredBackground(songCoverBitmap)
         }
     }
 
+
     private fun loadBlurredBackground(songCoverBitmap: Bitmap?) = Glide.with(binding.root.context)
-            .asBitmap()
-            .load(songCoverBitmap ?: R.drawable.music_cover_placeholder)
-            .addListener(DefaultGlideLogger(TAG))
-            .transform((BlurTransformation()))
-            .into(binding.backgroundBlurred)
+        .asBitmap()
+        .load(songCoverBitmap ?: R.drawable.music_cover_placeholder)
+        .addListener(DefaultGlideLogger(TAG))
+        .transform((BlurTransformation()))
+        .into(binding.backgroundBlurred)
 
 
-    private fun setSongCoverView() = lifecycleScope.launch {
-        viewModel.currentSong.collectLatest {song ->
+    private fun setSongCoverView() = uiStateAccessScope {
+        currentSong.collectLatest { song ->
             loadSongCover(song)
         }
     }
@@ -120,7 +128,6 @@ class SongViewFragment : Fragment() {
     }
 
 
-    @UnstableApi
     private fun setPlayerController() = lifecycleScope.launch {
         viewModel.mediaControllerFlow.collectLatest { mediaController ->
             binding.playbackControls.player = mediaController
