@@ -3,14 +3,14 @@ package com.bale_bootcamp.yourmusic.presentation.ui.songlist
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +20,8 @@ import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
 import com.bale_bootcamp.yourmusic.presentation.ui.sharedcomponent.SongsPlaybackUiState
 import com.bale_bootcamp.yourmusic.presentation.ui.sharedcomponent.SongsSharedViewModel
+import com.bale_bootcamp.yourmusic.presentation.ui.SongsSharedViewModel
+import com.bale_bootcamp.yourmusic.utils.PermissionUtil.checkAndAskPermission
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -60,28 +62,8 @@ class SongListFragment : Fragment() {
 
 
     private fun checkPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            if (requireContext().checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_DENIED) {
-                registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-                    if (it) onPermissionGranted()
-                    else onPermissionDenied()
-                }.launch(Manifest.permission.READ_MEDIA_AUDIO)
-            }
-            else {
-                onPermissionGranted()
-            }
-        }
-        else {
-            if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-                    if(it) onPermissionGranted()
-                    else onPermissionDenied()
-                }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-            else {
-                onPermissionGranted()
-            }
-        }
+        val permission = if (VERSION.SDK_INT > TIRAMISU) (Manifest.permission.READ_MEDIA_AUDIO) else (Manifest.permission.READ_EXTERNAL_STORAGE)
+        checkAndAskPermission(permission, onPermissionGranted, onPermissionDenied)
     }
 
 
