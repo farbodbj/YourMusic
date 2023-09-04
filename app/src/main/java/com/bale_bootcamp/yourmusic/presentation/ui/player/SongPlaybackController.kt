@@ -1,17 +1,18 @@
 package com.bale_bootcamp.yourmusic.presentation.ui.player
 
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
+import com.bale_bootcamp.yourmusic.data.repository.SongsRepository
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.common.util.concurrent.MoreExecutors
+import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 private const val TAG = "SongPlaybackController"
 @UnstableApi
 class SongPlaybackController @Inject constructor(
-    val mediaControllerFuture: ListenableFuture<MediaController>
+    val mediaControllerFuture: ListenableFuture<MediaController>,
+    private val songsRepository: SongsRepository
 ): PlaybackController {
 
     private val mediaController: MediaController?
@@ -23,26 +24,24 @@ class SongPlaybackController @Inject constructor(
             null
         }
 
-    private val mediaItems: MutableList<MediaItem> = mutableListOf()
+    val songsList = songsRepository.getSongsList()
 
-    init {
-        // onAddMediaItemsListener()
-    }
+//    init {
+//        onAddMediaItemsListener()
+//    }
+//
+//    private fun onAddMediaItemsListener() {
+//        mediaControllerFuture.addListener({
+//            // Log.i(TAG, "adding media items, count: ${mediaItems.count()}")
+//            //mediaControllerFuture.get().addMediaItems(mediaItems)
+//            addMediaItems()
+//        }, MoreExecutors.directExecutor())
+//    }
 
-    private fun onAddMediaItemsListener() {
-        mediaControllerFuture.addListener({
-            Log.i(TAG, "adding media items, count: ${mediaItems.count()}")
-            mediaControllerFuture.get().addMediaItems(mediaItems)
-        }, MoreExecutors.directExecutor())
-    }
-
-    fun addMediaItems(mediaItems: List<MediaItem>) {
-        mediaItems.forEach { mediaItem ->
-            if (mediaItem !in this.mediaItems) {
-                this.mediaItems.add(mediaItem)
-            }
+    suspend fun addMediaItems() = songsList.collectLatest {it ->
+        it.forEach {
+            mediaController?.addMediaItem(it.mediaItemFromSong())
         }
-        onAddMediaItemsListener()
     }
 
     override fun play(songIndex: Int) {

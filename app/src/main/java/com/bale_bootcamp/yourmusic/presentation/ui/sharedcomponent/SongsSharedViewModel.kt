@@ -10,8 +10,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.bale_bootcamp.yourmusic.data.model.Song
-import com.bale_bootcamp.yourmusic.data.model.SortOrder
-import com.bale_bootcamp.yourmusic.data.repository.SongsRepository
 import com.bale_bootcamp.yourmusic.presentation.ui.player.SongPlaybackController
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +24,7 @@ private const val TAG = "SongsSharedViewModel"
 @HiltViewModel
 class SongsSharedViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val songsRepository: SongsRepository,
+    //private val songsRepository: SongsRepository,
     private val playbackController: SongPlaybackController,
 ): ViewModel() {
 
@@ -58,25 +56,37 @@ class SongsSharedViewModel @Inject constructor(
     private fun setMediaControllerOnFutureCompletion() = playbackController
         .mediaControllerFuture.addListener({
             _mediaControllerFlow.value = playbackController.mediaControllerFuture.get()
+            //loadSongs()
+            viewModelScope.launch {
+                playbackController.addMediaItems()
+            }
+            viewModelScope.launch {
+                uiStateModificationScope {
+                    playbackController.songsList.collectLatest {
+                        songsFlow.value = it
+                    }
+                }
+            }
+
         }, MoreExecutors.directExecutor())
 
 
-    fun loadSongs(sortOrder: SortOrder = SortOrder.DATE_ADDED_ASC) = viewModelScope.launch {
-        val data = songsRepository.getSongsList(sortOrder)
-        Log.d(TAG, "data count: ${data.count()}")
-        uiStateModificationScope {
-            songsFlow.value = data
-        }
-        addSongsToPlayer()
-    }
-
-
-    private fun addSongsToPlayer() = uiStateModificationScope {
-        val mediaItems = songsFlow.value.map { song ->
-            song.mediaItemFromSong()
-        }
-        playbackController.addMediaItems(mediaItems)
-    }
+//    fun loadSongs(sortOrder: SortOrder = SortOrder.DATE_ADDED_ASC) = viewModelScope.launch {
+//        val data = songsRepository.getSongsList(sortOrder)
+//        Log.d(TAG, "data count: ${data.count()}")
+//        uiStateModificationScope {
+//            songsFlow.value = data
+//        }
+//        addSongsToPlayer()
+//    }
+//
+//
+//    private fun addSongsToPlayer() = uiStateModificationScope {
+//        val mediaItems = songsFlow.value.map { song ->
+//            song.mediaItemFromSong()
+//        }
+//        playbackController.addMediaItems(mediaItems)
+//    }
 
 
     fun onSongClicked(position: Int) {
@@ -99,6 +109,7 @@ class SongsSharedViewModel @Inject constructor(
         mediaController?.addListener(object: Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
+                Log.d(TAG, "media item count: ${mediaController.mediaItemCount}")
                 if(mediaItem != null)
                     uiStateModificationScope {
                         currentSong.value = Song(mediaItem, context)
