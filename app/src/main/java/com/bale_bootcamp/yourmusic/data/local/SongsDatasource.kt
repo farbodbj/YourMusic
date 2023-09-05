@@ -2,21 +2,28 @@ package com.bale_bootcamp.yourmusic.data.local
 
 import android.content.ContentUris
 import android.content.Context
+import android.database.ContentObserver
 import android.database.Cursor
 import android.provider.MediaStore.Audio.Media
-import android.util.Log
 import com.bale_bootcamp.yourmusic.data.model.Song
-import com.bale_bootcamp.yourmusic.data.model.SortOrder
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.util.Collections
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 private const val TAG = "SongsDatasource"
+@Singleton
 class SongsDatasource @Inject constructor(
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
+    coroutineScope: CoroutineScope
 ) {
 
     private val audioColumns = listOf(
@@ -27,35 +34,50 @@ class SongsDatasource @Inject constructor(
         Media.DURATION
     )
 
-    suspend fun getAllSongs(sortOrder: SortOrder): List<Song> = withContext(Dispatchers.IO) {
-        val songs: MutableList<Song> = mutableListOf()
-        queryMediaStore(sortOrder)?.use { cursor ->
-            Log.i(TAG, "${cursor.count} songs found")
-            populateSongsList(cursor, songs)
+    private val songsList get() = convertCursorToSongs(queryMediaStore())
+
+
+    val songsListFlow = callbackFlow {
+        val callback = object : ContentObserver(null) {
+            override fun onChange(selfChange: Boolean) {
+                super.onChange(selfChange)
+                trySend(songsList)
+            }
         }
 
-        Collections.unmodifiableList(songs)
-    }
+        context.contentResolver.registerContentObserver(Media.EXTERNAL_CONTENT_URI, true, callback)
+        awaitClose {
+            context.contentResolver.unregisterContentObserver(callback)
+        }
+
+    }.onStart {
+        emit(songsList)
+    }.flowOn(Dispatchers.IO).stateIn(coroutineScope, SharingStarted.Lazily, emptyList())
 
 
-    private fun queryMediaStore(sortOrder: SortOrder): Cursor? {
+
+    private fun convertCursorToSongs(cursor: Cursor?) = cursor?.let(this::fetchAllSongs).orEmpty()
+
+
+    private fun queryMediaStore(): Cursor? {
         val filterMusics = "${Media.IS_MUSIC} != 0"
-
         return context.contentResolver.query(
             Media.EXTERNAL_CONTENT_URI,
             audioColumns.toTypedArray(),
             filterMusics,
             null,
-            sortOrder.sortQuery
+            null
         )
     }
 
 
-    private fun populateSongsList(cursor: Cursor, songsList: MutableList<Song>) {
+    private fun fetchAllSongs(cursor: Cursor): List<Song> {
+        val songsList = mutableListOf<Song>()
         while (cursor.moveToNext()) {
             val song = createSongFromCursor(cursor)
             songsList.add(song)
         }
+        return songsList
     }
 
     private fun createSongFromCursor(cursor: Cursor): Song  = with(cursor) {
@@ -64,11 +86,7 @@ class SongsDatasource @Inject constructor(
         val album = getString(getColumnIndexOrThrow(Media.ALBUM))
         val artist = getString(getColumnIndexOrThrow(Media.ARTIST))
         val duration = getLong(getColumnIndexOrThrow(Media.DURATION))
-        val contentUri =
-            ContentUris.withAppendedId(
-                Media.EXTERNAL_CONTENT_URI,
-                id
-            )
+        val contentUri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id)
 
         return Song(id, title, album, artist, duration, contentUri)
     }

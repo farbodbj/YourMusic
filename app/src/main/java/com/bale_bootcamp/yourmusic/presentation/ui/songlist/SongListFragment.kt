@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +19,9 @@ import com.bale_bootcamp.yourmusic.data.model.Song
 import com.bale_bootcamp.yourmusic.databinding.FragmentSongListBinding
 import com.bale_bootcamp.yourmusic.presentation.ui.sharedcomponent.SongsPlaybackUiState
 import com.bale_bootcamp.yourmusic.presentation.ui.sharedcomponent.SongsSharedViewModel
-import com.bale_bootcamp.yourmusic.presentation.ui.SongsSharedViewModel
 import com.bale_bootcamp.yourmusic.utils.PermissionUtil.checkAndAskPermission
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -36,7 +35,7 @@ class SongListFragment : Fragment() {
 
     private val viewModel: SongsSharedViewModel by activityViewModels()
 
-    private fun uiStateAccessScope(block: suspend SongsPlaybackUiState.() -> Unit) = lifecycleScope.launch {
+    private fun uiStateAccessScope(block: suspend SongsPlaybackUiState.() -> Unit) = lifecycleScope.launch(Dispatchers.IO) {
         viewModel.songsPlaybackUiState.collectLatest {
             block(it)
         }
@@ -54,10 +53,7 @@ class SongListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkPermission(this::loadSongs) {
-            Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-        }
-        setUiComponents()
+        checkPermission(::setUiComponents, ::showPermissionDeniedToast)
     }
 
 
@@ -66,6 +62,10 @@ class SongListFragment : Fragment() {
         checkAndAskPermission(permission, onPermissionGranted, onPermissionDenied)
     }
 
+
+    private fun showPermissionDeniedToast() {
+        Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+    }
 
     private fun setUiComponents() {
         setSongsList()
@@ -87,9 +87,10 @@ class SongListFragment : Fragment() {
         binding.songList.adapter = songsAdapter
 
         binding.playbackControls.setOnClickListener {
-            Log.d(TAG, "playback controls holder clicked navigating to song view")
-            val direction = SongListFragmentDirections.actionSongListFragmentToSongViewFragment()
-            findNavController().navigate(direction)
+            if((binding.songList.adapter as SongsAdapter).itemCount > 0) {
+                val direction = SongListFragmentDirections.actionSongListFragmentToSongViewFragment()
+                findNavController().navigate(direction)
+            }
         }
     }
 
@@ -101,18 +102,12 @@ class SongListFragment : Fragment() {
     }
 
 
-    private fun loadSongs() {
-        viewModel.loadSongs()
-    }
-
-
     @Suppress("UNCHECKED_CAST")
     private fun collectSongs() = uiStateAccessScope {
         songsFlow.collectLatest { songs ->
             (binding.songList.adapter as ListAdapter<Song, *>).submitList(songs)
         }
     }
-
 
 
     override fun onDestroy() {
