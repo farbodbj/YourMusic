@@ -58,7 +58,7 @@ class SongListFragment : Fragment() {
 
 
     private fun checkPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
-        val permission = if (VERSION.SDK_INT > TIRAMISU) (Manifest.permission.READ_MEDIA_AUDIO) else (Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permission = if (VERSION.SDK_INT >= TIRAMISU) (Manifest.permission.READ_MEDIA_AUDIO) else (Manifest.permission.READ_EXTERNAL_STORAGE)
         checkAndAskPermission(permission, onPermissionGranted, onPermissionDenied)
     }
 
